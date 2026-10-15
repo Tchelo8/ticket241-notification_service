@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenue sur Ticket241</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f4f7;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 50px 20px;
+            text-align: center;
+            color: white;
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 32px;
+            font-weight: 600;
+        }
+        .header p {
+            margin: 0;
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .greeting {
+            font-size: 20px;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+        .message {
+            font-size: 16px;
+            color: #555555;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+        .features {
+            margin: 30px 0;
+        }
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        .feature-icon {
+            font-size: 24px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .feature-text {
+            flex: 1;
+        }
+        .feature-title {
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 5px;
+        }
+        .feature-description {
+            font-size: 14px;
+            color: #666666;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #888888;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <!-- Header -->
+    <div class="header">
+        <h1>🎉 Bienvenue sur Ticket241 !</h1>
+        <p>Votre compte est maintenant actif</p>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <p class="greeting">Bonjour <span th:text="${firstName}">Utilisateur</span> ! 👋</p>
+
+        <p class="message">
+            Félicitations ! Votre compte Ticket241 a été créé avec succès.
+            Vous êtes maintenant prêt à découvrir les événements les plus excitants et à réserver vos billets en quelques clics.
+        </p>
+
+        <!-- Features -->
+        <div class="features">
+            <div class="feature-item">
+                <div class="feature-icon">🎫</div>
+                <div class="feature-text">
+                    <div class="feature-title">Réservation facile</div>
+                    <div class="feature-description">Réservez vos billets en quelques secondes et recevez-les instantanément</div>
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">🔔</div>
+                <div class="feature-text">
+                    <div class="feature-title">Notifications en temps réel</div>
+                    <div class="feature-description">Recevez des alertes pour vos événements favoris</div>
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">📱</div>
+                <div class="feature-text">
+                    <div class="feature-title">Billets numériques</div>
+                    <div class="feature-description">Tous vos billets accessibles depuis votre téléphone</div>
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">💳</div>
+                <div class="feature-text">
+                    <div class="feature-title">Paiement sécurisé</div>
+                    <div class="feature-description">Transactions 100% sécurisées</div>
+                </div>
+            </div>
+        </div>
+
+        <p class="message">
+            Prêt à découvrir les meilleurs événements ? Commencez dès maintenant !
+        </p>
+
+        <center>
+            <a href="https://ticket241.com/events" class="cta-button">
+                Découvrir les événements
+            </a>
+        </center>
+
+        <p class="message" style="margin-top: 30px; font-size: 14px; color: #888888;">
+            Si vous avez des questions, n'hésitez pas à contacter notre équipe support à tout moment.
+        </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2025 Ticket241. Tous droits réservés.</p>
+        <p>
+            <a href="https://ticket241.com">Site web</a> •
+            <a href="https://ticket241.com/support">Support</a> •
+            <a href="https://ticket241.com/privacy">Confidentialité</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>

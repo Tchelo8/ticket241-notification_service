@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation de vos billets</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f4f7;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            text-align: center;
+            color: white;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .success-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .greeting {
+            font-size: 18px;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+        .message {
+            font-size: 16px;
+            color: #555555;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .ticket-info {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px 25px;
+            margin: 25px 0;
+        }
+        /* Tableaux plutôt que flexbox : rendu fiable dans Gmail et Outlook */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .info-table td {
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 15px;
+        }
+        .info-table tr:last-child td {
+            border-bottom: none;
+        }
+        .ticket-label {
+            font-weight: 600;
+            color: #666666;
+        }
+        .ticket-value {
+            color: #333333;
+            text-align: right;
+        }
+        .section-title {
+            font-size: 17px;
+            color: #333333;
+            margin: 30px 0 10px 0;
+        }
+        .tickets-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .tickets-table th {
+            text-align: left;
+            color: #666666;
+            font-weight: 600;
+            padding: 10px 8px;
+            border-bottom: 2px solid #667eea;
+        }
+        .tickets-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #333333;
+        }
+        .ticket-number {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+        .attachment-box {
+            background-color: #eef1fd;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 30px 0 20px 0;
+            font-size: 14px;
+            color: #333333;
+            line-height: 1.6;
+        }
+        .important-note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #856404;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #888888;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <!-- Header -->
+    <div class="header">
+        <div class="success-icon">✅</div>
+        <h1 th:text="${ticketCount > 1} ? 'Billets confirmés !' : 'Billet confirmé !'">Billet confirmé !</h1>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <p class="greeting">Bonjour <span th:text="${firstName}">Utilisateur</span> ! 🎉</p>
+
+        <p class="message">
+            Votre paiement a bien été reçu : vos billets pour
+            <strong th:text="${eventName}">Nom de l'événement</strong> sont confirmés.
+            Nous sommes ravis de vous compter parmi nous.
+        </p>
+
+        <!-- Récapitulatif de la commande -->
+        <div class="ticket-info">
+            <table class="info-table" role="presentation">
+                <tr>
+                    <td class="ticket-label">🎪 Événement</td>
+                    <td class="ticket-value" th:text="${eventName}">Nom de l'événement</td>
+                </tr>
+                <tr th:if="${eventDate}">
+                    <td class="ticket-label">📅 Date</td>
+                    <td class="ticket-value" th:text="${eventDate}">Samedi 12 décembre 2026 à 20h00</td>
+                </tr>
+                <tr th:if="${eventLocation}">
+                    <td class="ticket-label">📍 Lieu</td>
+                    <td class="ticket-value" th:text="${eventLocation}">Lieu, Ville</td>
+                </tr>
+                <tr>
+                    <td class="ticket-label">🎫 Nombre de billets</td>
+                    <td class="ticket-value" th:text="${ticketCount}">1</td>
+                </tr>
+                <tr th:if="${totalAmount}">
+                    <td class="ticket-label">💳 Montant payé</td>
+                    <td class="ticket-value" th:text="${totalAmount}">10 000 XAF</td>
+                </tr>
+                <tr>
+                    <td class="ticket-label">🧾 Référence</td>
+                    <td class="ticket-value" th:text="${orderReference}">AB12CD34</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Détail des billets -->
+        <h3 class="section-title">Vos billets</h3>
+        <table class="tickets-table">
+            <thead>
+            <tr>
+                <th>Numéro</th>
+                <th>Catégorie</th>
+                <th>Titulaire</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="ticket : ${tickets}">
+                <td class="ticket-number" th:text="${ticket.ticketNumber}">TKT-2026-ABCDEFGHJK</td>
+                <td th:text="${ticket.categoryName}">VIP</td>
+                <td th:text="${ticket.holderName != null} ? ${ticket.holderName} : '-'">Prénom Nom</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Pièce jointe -->
+        <div class="attachment-box">
+            <strong>📎 Vos billets sont en pièce jointe (PDF).</strong><br/>
+            Chaque billet contient son QR code d'entrée. Présentez-le à l'entrée, sur votre téléphone
+            ou imprimé. Vous pouvez aussi le retélécharger à tout moment depuis « Mes billets » dans
+            l'application Ticket241.
+        </div>
+
+        <!-- Important Note -->
+        <div class="important-note">
+            <strong>📌 Important :</strong> chaque QR code ne peut être scanné qu'une seule fois.
+            Ne partagez pas vos billets et ne les publiez pas sur les réseaux sociaux.
+        </div>
+
+        <center>
+            <a href="https://ticket241.com/my-tickets" class="cta-button">
+                Voir mes billets
+            </a>
+        </center>
+
+        <p class="message" style="margin-top: 30px; font-size: 14px; color: #888888;">
+            Des questions ? Notre équipe support est là pour vous aider !
+        </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2026 Ticket241. Tous droits réservés.</p>
+        <p>
+            <a href="https://ticket241.com">Site web</a> •
+            <a href="https://ticket241.com/support">Support</a> •
+            <a href="https://ticket241.com/my-tickets">Mes billets</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>

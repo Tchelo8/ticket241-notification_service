@@ -1,0 +1,4 @@
+# Fichiers locaux de l'IDE et des outils : jamais versionnés
+.idea/
+.claude/
+target/

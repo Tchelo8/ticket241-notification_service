@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rappel : Votre événement approche</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f4f7;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            padding: 40px 20px;
+            text-align: center;
+            color: white;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .reminder-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .greeting {
+            font-size: 18px;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+        .message {
+            font-size: 16px;
+            color: #555555;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .event-details {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            padding: 30px;
+            color: white;
+            margin: 25px 0;
+        }
+        .event-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .detail-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .detail-icon {
+            font-size: 24px;
+            margin-right: 15px;
+            min-width: 30px;
+        }
+        .checklist {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        .checklist-title {
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            font-size: 15px;
+            color: #555555;
+        }
+        .checklist-icon {
+            margin-right: 10px;
+            color: #667eea;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #888888;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <!-- Header -->
+    <div class="header">
+        <div class="reminder-icon">⏰</div>
+        <h1>C'est bientôt !</h1>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <p class="greeting">Bonjour <span th:text="${firstName}">Utilisateur</span> ! 👋</p>
+
+        <p class="message">
+            Votre événement commence dans <strong>24 heures</strong> !
+            Préparez-vous pour une expérience inoubliable.
+        </p>
+
+        <!-- Event Details -->
+        <div class="event-details">
+            <div class="event-title" th:text="${eventName}">Nom de l'événement</div>
+
+            <div class="detail-row">
+                <span class="detail-icon">📅</span>
+                <span th:text="${eventDate}">Date de l'événement</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-icon">📍</span>
+                <span th:text="${eventLocation}">Lieu de l'événement</span>
+            </div>
+        </div>
+
+        <!-- Checklist -->
+        <div class="checklist">
+            <div class="checklist-title">✓ Checklist avant l'événement</div>
+
+            <div class="checklist-item">
+                <span class="checklist-icon">✓</span>
+                <span>Vérifiez que votre billet est accessible dans l'application</span>
+            </div>
+
+            <div class="checklist-item">
+                <span class="checklist-icon">✓</span>
+                <span>Assurez-vous que votre téléphone est chargé</span>
+            </div>
+
+            <div class="checklist-item">
+                <span class="checklist-icon">✓</span>
+                <span>Prévoyez d'arriver 30 minutes avant le début</span>
+            </div>
+
+            <div class="checklist-item">
+                <span class="checklist-icon">✓</span>
+                <span>Consultez les conditions d'accès de l'événement</span>
+            </div>
+        </div>
+
+        <p class="message">
+            Votre QR code d'entrée est disponible dans votre application. N'oubliez pas de le présenter à l'entrée !
+        </p>
+
+        <center>
+            <a href="https://ticket241.com/my-tickets" class="cta-button">
+                Voir mon billet
+            </a>
+        </center>
+
+        <p class="message" style="margin-top: 30px; font-size: 14px; color: #888888;">
+            Nous vous souhaitons un excellent moment ! 🎉
+        </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2025 Ticket241. Tous droits réservés.</p>
+        <p>
+            <a href="https://ticket241.com">Site web</a> •
+            <a href="https://ticket241.com/support">Support</a> •
+            <a href="https://ticket241.com/my-tickets">Mes billets</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,133 @@
+server:
+  port: 9004
+
+kafka:
+  enabled: true
+
+spring:
+  autoconfigure:
+    exclude: []
+  application:
+    name: notification-service-ticket241
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/notification_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:azerty}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
+
+  # Email Configuration (Gmail)
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:noreply.notifcationticket241@gmail.com}
+    # Jamais de vraie valeur ici (dépôt public) : la variable d'environnement MAIL_PASSWORD, ou en local
+    # le fichier non versionné config/application.yaml (chargé automatiquement par Spring Boot)
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+      # Activation du debug en développement
+      debug: true
+
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: notification-service-group
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.ticket241.notification_service.event
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.ticket241.notification_service.event.UserRegisteredEvent
+
+
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone:
+        http://localhost:8781/eureka/
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# Firebase Configuration
+firebase:
+  config:
+    file: classpath:firebase-service-account.json
+
+# Notification Configuration
+notification:
+  email:
+    from: noreply.notifcationticket241@gmail.com
+    from-name: Ticket241
+  otp:
+    expiry-minutes: 5
+    length: 6
+    # Pepper utilisé pour hasher les codes OTP en base (ne jamais commiter la vraie valeur)
+    hash-secret: ${OTP_HASH_SECRET:change-me-in-production}
+  fcm:
+    enabled: true
+  sms:
+    enabled: false  # Désactivé pour l'instant
+    provider: twilio  # Préparé pour futur mobile sms
+  # Clé partagée exigée sur les endpoints internes (appels service-à-service, ex: auth-service)
+  internal:
+    api-key: ${INTERNAL_API_KEY:change-me-in-production}
+
+# Feign Configuration
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+
+# Logging
+logging:
+  level:
+    com.ticket241.notificationservice: DEBUG
+    org.springframework.kafka: INFO
+    org.springframework.mail: DEBUG
+    com.google.firebase: DEBUG
+
+
+
+
+#    exclude: pour desactiver kafka
+#      - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration

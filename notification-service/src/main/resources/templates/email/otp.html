@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code de vérification Ticket241</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f4f7;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            text-align: center;
+            color: white;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .greeting {
+            font-size: 18px;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+        .message {
+            font-size: 16px;
+            color: #555555;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .otp-box {
+            background-color: #f8f9fa;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        .otp-code {
+            font-size: 42px;
+            font-weight: bold;
+            color: #667eea;
+            letter-spacing: 8px;
+            font-family: 'Courier New', monospace;
+        }
+        .otp-expiry {
+            font-size: 14px;
+            color: #888888;
+            margin-top: 15px;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #856404;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #888888;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <!-- Header -->
+    <div class="header">
+        <h1>Ticket241</h1>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <p class="greeting">Bonjour <span th:text="${firstName}">Utilisateur</span> ! 👋</p>
+
+        <p class="message">
+            Bienvenue sur Ticket241 ! Pour finaliser votre inscription, veuillez utiliser le code de vérification ci-dessous :
+        </p>
+
+        <!-- OTP Box -->
+        <div class="otp-box">
+            <div class="otp-code" th:text="${otpCode}">123456</div>
+            <div class="otp-expiry">
+                ⏰ Ce code expire dans <strong th:text="${expiryMinutes}">5</strong> minutes
+            </div>
+        </div>
+
+        <p class="message">
+            Entrez ce code dans l'application pour activer votre compte.
+        </p>
+
+        <!-- Warning -->
+        <div class="warning">
+            <strong>⚠️ Important :</strong> Ne partagez jamais ce code avec qui que ce soit. L'équipe Ticket241 ne vous demandera jamais votre code de vérification.
+        </div>
+
+        <p class="message" style="margin-top: 30px;">
+            Si vous n'avez pas demandé ce code, vous pouvez ignorer cet email en toute sécurité.
+        </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2025 Ticket241. Tous droits réservés.</p>
+        <p>
+            <a href="https://ticket241.com">Site web</a> •
+            <a href="https://ticket241.com/support">Support</a> •
+            <a href="https://ticket241.com/privacy">Confidentialité</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>
