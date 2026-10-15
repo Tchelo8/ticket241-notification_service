@@ -36,7 +36,7 @@ public class NotificationService {
         Optional<NotificationPreference> preferencesOpt =
                 notificationPreferenceRepository.findByUserId(request.getUserId());
 
-        NotificationPreference preferences = preferencesOpt.orElse(createDefaultPreferences(request.getUserId()));
+        NotificationPreference preferences = preferencesOpt.orElseGet(() -> createDefaultPreferences(request.getUserId()));
 
         // Envoyer selon le canal demandé et les préférences
         switch (request.getChannel()) {
@@ -74,7 +74,7 @@ public class NotificationService {
         Optional<NotificationPreference> preferencesOpt =
                 notificationPreferenceRepository.findByUserId(userId);
 
-        NotificationPreference preferences = preferencesOpt.orElse(createDefaultPreferences(userId));
+        NotificationPreference preferences = preferencesOpt.orElseGet(() -> createDefaultPreferences(userId));
 
         List<String> sentChannels = new ArrayList<>();
 

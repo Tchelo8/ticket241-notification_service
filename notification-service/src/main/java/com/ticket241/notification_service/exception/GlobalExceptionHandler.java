@@ -58,6 +58,23 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
+    // Accès refusé : envoi réservé aux admins, ou données d'un autre compte
+    @ExceptionHandler(NotificationAccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDenied(
+            NotificationAccessDeniedException ex, WebRequest request) {
+
+        log.warn("Accès refusé : {}", ex.getMessage());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.FORBIDDEN.value());
+        response.put("error", "Forbidden");
+        response.put("message", ex.getMessage());
+        response.put("path", request.getDescription(false).replace("uri=", ""));
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+
     // Gérer les IllegalArgumentException
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgumentException(

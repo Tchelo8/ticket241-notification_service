@@ -10,6 +10,7 @@ import com.ticket241.notification_service.entity.NotificationPreference;
 import com.ticket241.notification_service.repository.FcmTokenRepository;
 import com.ticket241.notification_service.repository.NotificationHistoryRepository;
 import com.ticket241.notification_service.repository.NotificationPreferenceRepository;
+import com.ticket241.notification_service.security.CallerContext;
 import com.ticket241.notification_service.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class NotificationController {
+
+    // Identité de l'appelant, injectée par la gateway depuis le JWT (route protégée par JwtAuthenticationFilter)
+    private static final String ACCOUNT_ID_HEADER = "X-User-Account-Id";
+    private static final String ROLES_HEADER = "X-User-Roles";
 
     private final NotificationService notificationService;
     private final EmailNotificationService emailNotificationService;
@@ -76,7 +81,12 @@ public class NotificationController {
 
     // Enregistrer un token FCM depuis l'app Flutter
     @PostMapping("/fcm/register")
-    public ResponseEntity<Map<String, Object>> registerFcmToken(@Valid @RequestBody FcmTokenRequestDto request) {
+    public ResponseEntity<Map<String, Object>> registerFcmToken(
+            @Valid @RequestBody FcmTokenRequestDto request,
+            @RequestHeader(value = ACCOUNT_ID_HEADER, required = false) String accountId,
+            @RequestHeader(value = ROLES_HEADER, required = false) String roles) {
+        CallerContext.of(accountId, roles).requireAccessTo(request.getUserId());
+
         log.info("POST /api/notifications/fcm/register - userId: {}, deviceType: {}",
                 request.getUserId(), request.getDeviceType());
 
@@ -133,8 +143,16 @@ public class NotificationController {
 
     // Désactiver un token FCM logout de l'app
     @DeleteMapping("/fcm/unregister")
-    public ResponseEntity<Map<String, Object>> unregisterFcmToken(@RequestParam String fcmToken) {
+    public ResponseEntity<Map<String, Object>> unregisterFcmToken(
+            @RequestParam String fcmToken,
+            @RequestHeader(value = ACCOUNT_ID_HEADER, required = false) String accountId,
+            @RequestHeader(value = ROLES_HEADER, required = false) String roles) {
         log.info("DELETE /api/notifications/fcm/unregister");
+
+        // On ne désactive que ses propres appareils
+        CallerContext caller = CallerContext.of(accountId, roles);
+        fcmTokenRepository.findByFcmToken(fcmToken)
+                .ifPresent(token -> caller.requireAccessTo(token.getUserId()));
 
         Map<String, Object> response = new HashMap<>();
 
@@ -157,8 +175,12 @@ public class NotificationController {
 
     // Récupérer tous les tokens d'un utilisateur
     @GetMapping("/fcm/tokens/{userId}")
-    public ResponseEntity<List<FcmToken>> getUserFcmTokens(@PathVariable Long userId) {
+    public ResponseEntity<List<FcmToken>> getUserFcmTokens(
+            @PathVariable Long userId,
+            @RequestHeader(value = ACCOUNT_ID_HEADER, required = false) String accountId,
+            @RequestHeader(value = ROLES_HEADER, required = false) String roles) {
         log.info("GET /api/notifications/fcm/tokens/{}", userId);
+        CallerContext.of(accountId, roles).requireAccessTo(userId);
 
         List<FcmToken> tokens = fcmTokenRepository.findByUserIdAndIsActiveTrue(userId);
 
@@ -167,8 +189,14 @@ public class NotificationController {
     }
 
 
+    // Envois libres (test, email, push, SMS) : admin uniquement, sinon n'importe qui enverrait des
+    // messages au nom de Ticket241
     @PostMapping("/test/send-email")
-    public ResponseEntity<String> sendTestEmail(@RequestParam String email) {
+    public ResponseEntity<String> sendTestEmail(
+            @RequestParam String email,
+            @RequestHeader(value = ACCOUNT_ID_HEADER, required = false) String accountId,
+            @RequestHeader(value = ROLES_HEADER, required = false) String roles) {
+        CallerContext.of(accountId, roles).requireAdmin();
 
         try {
             EmailRequestDto request = EmailRequestDto.builder()
@@ -191,7 +219,11 @@ public class NotificationController {
 
     // Envoyer un email simple
     @PostMapping("/email/send")
-    public ResponseEntity<Map<String, Object>> sendEmail(@Valid @RequestBody EmailRequestDto request) {
+    public ResponseEntity<Map<String, Object>> sendEmail(
+            @Valid @RequestBody EmailRequestDto request,
+            @RequestHeader(value = ACCOUNT_ID_HEADER, required = false) String accountId,
+            @RequestHeader(value = ROLES_HEADER, required = false) String roles) {
+        CallerContext.of(accountId, roles).requireAdmin();
         log.info("POST /api/notifications/email/send - to: {}", request.getTo());
 
         Map<String, Object> response = new HashMap<>();
@@ -219,7 +251,11 @@ public class NotificationController {
 
     // Envoyer une notification push
     @PostMapping("/push/send")
-    public ResponseEntity<Map<String, Object>> sendPushNotification(@Valid @RequestBody PushNotificationRequestDto request) {
+    public ResponseEntity<Map<String, Object>> sendPushNotification(
+            @Valid @RequestBody PushNotificationRequestDto request,
+            @RequestHeader(value = ACCOUNT_ID_HEADER, required = false) String accountId,
+            @RequestHeader(value = ROLES_HEADER, required = false) String roles) {
+        CallerContext.of(accountId, roles).requireAdmin();
         log.info("POST /api/notifications/push/send - userId: {}", request.getUserId());
 
         Map<String, Object> response = new HashMap<>();
@@ -243,7 +279,11 @@ public class NotificationController {
 
     // Envoyer un SMS
     @PostMapping("/sms/send")
-    public ResponseEntity<Map<String, Object>> sendSms(@Valid @RequestBody SmsRequestDto request) {
+    public ResponseEntity<Map<String, Object>> sendSms(
+            @Valid @RequestBody SmsRequestDto request,
+            @RequestHeader(value = ACCOUNT_ID_HEADER, required = false) String accountId,
+            @RequestHeader(value = ROLES_HEADER, required = false) String roles) {
+        CallerContext.of(accountId, roles).requireAdmin();
         log.info("POST /api/notifications/sms/send - phoneNumber: {}", request.getPhoneNumber());
 
         Map<String, Object> response = new HashMap<>();
@@ -269,8 +309,12 @@ public class NotificationController {
 
     // Récupérer les préférences d'un utilisateur
     @GetMapping("/preferences/{userId}")
-    public ResponseEntity<NotificationPreference> getUserPreferences(@PathVariable Long userId) {
+    public ResponseEntity<NotificationPreference> getUserPreferences(
+            @PathVariable Long userId,
+            @RequestHeader(value = ACCOUNT_ID_HEADER, required = false) String accountId,
+            @RequestHeader(value = ROLES_HEADER, required = false) String roles) {
         log.info("GET /api/notifications/preferences/{}", userId);
+        CallerContext.of(accountId, roles).requireAccessTo(userId);
 
         Optional<NotificationPreference> preferences = notificationPreferenceRepository.findByUserId(userId);
 
@@ -302,8 +346,12 @@ public class NotificationController {
 
     // Mettre à jour les préférences
     @PutMapping("/preferences")
-    public ResponseEntity<NotificationPreference> updatePreferences(@Valid @RequestBody NotificationPreferenceRequestDto request) {
+    public ResponseEntity<NotificationPreference> updatePreferences(
+            @Valid @RequestBody NotificationPreferenceRequestDto request,
+            @RequestHeader(value = ACCOUNT_ID_HEADER, required = false) String accountId,
+            @RequestHeader(value = ROLES_HEADER, required = false) String roles) {
         log.info("PUT /api/notifications/preferences - userId: {}", request.getUserId());
+        CallerContext.of(accountId, roles).requireAccessTo(request.getUserId());
 
         Optional<NotificationPreference> existingPreferences =
                 notificationPreferenceRepository.findByUserId(request.getUserId());
@@ -346,9 +394,12 @@ public class NotificationController {
     public ResponseEntity<Page<NotificationHistory>> getUserNotificationHistory(
             @PathVariable Long userId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(defaultValue = "20") int size,
+            @RequestHeader(value = ACCOUNT_ID_HEADER, required = false) String accountId,
+            @RequestHeader(value = ROLES_HEADER, required = false) String roles) {
 
         log.info("GET /api/notifications/history/{} - page: {}, size: {}", userId, page, size);
+        CallerContext.of(accountId, roles).requireAccessTo(userId);
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("sentAt").descending());
         Page<NotificationHistory> history = notificationHistoryRepository.findByUserId(userId, pageRequest);
@@ -359,8 +410,12 @@ public class NotificationController {
 
     // Récupérer les statistiques des notifications d'un utilisateur
     @GetMapping("/stats/{userId}")
-    public ResponseEntity<Map<String, Object>> getUserNotificationStats(@PathVariable Long userId) {
+    public ResponseEntity<Map<String, Object>> getUserNotificationStats(
+            @PathVariable Long userId,
+            @RequestHeader(value = ACCOUNT_ID_HEADER, required = false) String accountId,
+            @RequestHeader(value = ROLES_HEADER, required = false) String roles) {
         log.info("GET /api/notifications/stats/{}", userId);
+        CallerContext.of(accountId, roles).requireAccessTo(userId);
 
         Map<String, Object> stats = new HashMap<>();
 
@@ -386,7 +441,10 @@ public class NotificationController {
     @PostMapping("/test/send")
     public ResponseEntity<Map<String, Object>> sendTestNotification(
             @RequestParam Long userId,
-            @RequestParam(required = false) String channel) {
+            @RequestParam(required = false) String channel,
+            @RequestHeader(value = ACCOUNT_ID_HEADER, required = false) String accountId,
+            @RequestHeader(value = ROLES_HEADER, required = false) String roles) {
+        CallerContext.of(accountId, roles).requireAdmin();
 
         log.info("POST /api/notifications/test/send - userId: {}, channel: {}", userId, channel);
 
