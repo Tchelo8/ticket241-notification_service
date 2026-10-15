@@ -13,7 +13,8 @@ spring:
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/notification_db}
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:azerty}
+    # Secrets : variables d'environnement ou fichier local config/application.yaml (voir config/secrets.example.yaml)
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -100,15 +101,16 @@ notification:
     expiry-minutes: 5
     length: 6
     # Pepper utilisé pour hasher les codes OTP en base (ne jamais commiter la vraie valeur)
-    hash-secret: ${OTP_HASH_SECRET:change-me-in-production}
+    hash-secret: ${OTP_HASH_SECRET}
   fcm:
     enabled: true
   sms:
     enabled: false  # Désactivé pour l'instant
     provider: twilio  # Préparé pour futur mobile sms
   # Clé partagée exigée sur les endpoints internes (appels service-à-service, ex: auth-service)
+  # Doit être IDENTIQUE dans auth-service, notification-service et ticket-service
   internal:
-    api-key: ${INTERNAL_API_KEY:change-me-in-production}
+    api-key: ${INTERNAL_API_KEY}
 
 # Feign Configuration
 feign:

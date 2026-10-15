@@ -1,7 +1,7 @@
 HELP.md
 target/
 
-### Secrets locaux (mot de passe Gmail…) : jamais versionnés ###
+### Secrets locaux (Gmail, base de données, clés internes…) : jamais versionnés ###
 config/application.yaml
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
