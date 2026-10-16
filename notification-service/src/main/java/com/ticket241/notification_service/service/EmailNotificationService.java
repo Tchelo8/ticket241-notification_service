@@ -1,6 +1,7 @@
 package com.ticket241.notification_service.service;
 
 
+import com.ticket241.notification_service.dto.request.AdminAlertRequestDto;
 import com.ticket241.notification_service.dto.request.EmailRequestDto;
 import com.ticket241.notification_service.entity.NotificationHistory;
 import com.ticket241.notification_service.enums.NotificationChannel;
@@ -169,6 +170,26 @@ public class EmailNotificationService {
 
             throw new NotificationException("Échec de l'envoi de l'email", e);
         }
+    }
+
+    // Alerte aux administrateurs Ticket241 (texte brut). Envoi destinataire par destinataire :
+    // un email refusé ne doit pas empêcher les autres admins d'être prévenus. Renvoie le nombre d'envois réussis.
+    public int sendAdminAlert(AdminAlertRequestDto request) {
+        int sent = 0;
+        for (String recipient : request.getRecipients()) {
+            try {
+                sendSimpleEmail(EmailRequestDto.builder()
+                        .to(recipient)
+                        .subject("[Ticket241 - Alerte] " + request.getSubject())
+                        .body(request.getMessage())
+                        .isHtml(false)
+                        .build());
+                sent++;
+            } catch (NotificationException e) {
+                log.error("Alerte admin non envoyée à {} : {}", recipient, e.getMessage());
+            }
+        }
+        return sent;
     }
 
     // Envoyer un OTP par email

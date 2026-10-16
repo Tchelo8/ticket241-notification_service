@@ -62,6 +62,20 @@ public class NotificationController {
         }
     }
 
+    // Alerte aux administrateurs Ticket241, appelée par les autres services (clé interne exigée,
+    // voir InternalSecurityConfig). 503 si aucun email n'a pu partir, pour que l'appelant le journalise.
+    @PostMapping("/internal/admin-alert")
+    public ResponseEntity<Map<String, Object>> sendAdminAlert(@Valid @RequestBody AdminAlertRequestDto request) {
+        log.info("POST /api/notifications/internal/admin-alert - {} destinataire(s)", request.getRecipients().size());
+
+        int sent = emailNotificationService.sendAdminAlert(request);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("sent", sent);
+        response.put("recipients", request.getRecipients().size());
+        return ResponseEntity.status(sent > 0 ? HttpStatus.OK : HttpStatus.SERVICE_UNAVAILABLE).body(response);
+    }
+
     // Vérifier un OTP
     @PostMapping("/otp/verify")
     public ResponseEntity<OtpVerificationResponseDto> verifyOtp(@Valid @RequestBody OtpVerificationRequestDto request) {

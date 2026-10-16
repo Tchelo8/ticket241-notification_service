@@ -12,13 +12,13 @@ public class InternalSecurityConfig {
     @Value("${notification.internal.api-key}")
     private String internalApiKey;
 
-    // Filtre appliqué uniquement aux endpoints internes (OTP), pas à l'ensemble de l'API
+    // Filtre appliqué uniquement aux endpoints internes (OTP, alertes admin), pas à l'ensemble de l'API
     @Bean
     public FilterRegistrationBean<InternalApiKeyFilter> internalApiKeyFilterRegistration() {
         FilterRegistrationBean<InternalApiKeyFilter> registration =
                 new FilterRegistrationBean<>(new InternalApiKeyFilter(internalApiKey));
 
-        registration.addUrlPatterns("/api/notifications/otp/*");
+        registration.addUrlPatterns("/api/notifications/otp/*", "/api/notifications/internal/*");
         registration.setOrder(1);
         registration.setName("internalApiKeyFilter");
 
