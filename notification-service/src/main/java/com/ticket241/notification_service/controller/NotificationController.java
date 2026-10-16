@@ -76,6 +76,21 @@ public class NotificationController {
         return ResponseEntity.status(sent > 0 ? HttpStatus.OK : HttpStatus.SERVICE_UNAVAILABLE).body(response);
     }
 
+    // Email texte pour le compte d'un autre service (clé interne exigée). Un échec SMTP remonte en
+    // erreur : l'appelant décide s'il réessaie.
+    @PostMapping("/internal/email")
+    public ResponseEntity<Void> sendInternalEmail(@Valid @RequestBody InternalEmailRequestDto request) {
+        log.info("POST /api/notifications/internal/email - sujet: {}", request.getSubject());
+
+        emailNotificationService.sendSimpleEmail(EmailRequestDto.builder()
+                .to(request.getTo())
+                .subject(request.getSubject())
+                .body(request.getBody())
+                .isHtml(false)
+                .build());
+        return ResponseEntity.noContent().build();
+    }
+
     // Vérifier un OTP
     @PostMapping("/otp/verify")
     public ResponseEntity<OtpVerificationResponseDto> verifyOtp(@Valid @RequestBody OtpVerificationRequestDto request) {
