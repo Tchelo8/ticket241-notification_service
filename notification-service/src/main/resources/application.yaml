@@ -68,7 +68,16 @@ spring:
         spring.json.use.type.headers: false
         spring.json.value.default.type: com.ticket241.notification_service.event.UserRegisteredEvent
 
-
+  cloud:
+    openfeign:
+      # Depuis Spring Cloud 2022 les clés "feign.*" ne sont plus lues : c'est ici que se règlent les
+      # timeouts (ex: récupération du PDF des billets auprès de ticket-service)
+      client:
+        config:
+          default:
+            connectTimeout: 5000
+            # Un PDF de 10 billets se génère en quelques secondes : marge plus large que pour un appel simple
+            readTimeout: 15000
 
 
 eureka:
@@ -111,14 +120,6 @@ notification:
   # Doit être IDENTIQUE dans auth-service, notification-service et ticket-service
   internal:
     api-key: ${INTERNAL_API_KEY}
-
-# Feign Configuration
-feign:
-  client:
-    config:
-      default:
-        connectTimeout: 5000
-        readTimeout: 5000
 
 # Logging
 logging:
